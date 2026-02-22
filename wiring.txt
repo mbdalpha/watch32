@@ -1,0 +1,109 @@
+QDSP/HDSP-2000 Smart Display - ESP32 Wiring Diagram
+====================================================
+
+Reference: https://www.instructables.com/Arduino-QDSP-Display/
+
+
+                    ESP32 DevKit                    QDSP/HDSP-2000 Display
+                 ┌──────────────┐                  ┌──────────────────┐
+                 │              │                   │                  │
+  Data Bus       │  GPIO 13 ────┼───────────────────┤ D0               │
+  (7-bit ASCII)  │  GPIO 12 ────┼───────────────────┤ D1               │
+                 │  GPIO 14 ────┼───────────────────┤ D2               │
+                 │  GPIO 27 ────┼───────────────────┤ D3               │
+                 │  GPIO 26 ────┼───────────────────┤ D4               │
+                 │  GPIO 25 ────┼───────────────────┤ D5               │
+                 │  GPIO 33 ────┼───────────────────┤ D6               │
+                 │              │                   │                  │
+                 │              │         GND ──────┤ D7  !! MUST be   │
+                 │              │                   │      tied to GND │
+  Address Bus    │              │                   │                  │
+  (digit select) │  GPIO 15 ────┼───────────────────┤ Ad0              │
+                 │  GPIO  2 ────┼───────────────────┤ Ad1              │
+                 │  GPIO  4 ────┼───────────────────┤ Ad2              │
+                 │              │                   │                  │
+  Control        │  GPIO 16 ────┼───────────────────┤ CE  (active LOW) │
+                 │  GPIO 17 ────┼───────────────────┤ RST (active LOW) │
+                 │              │                   │                  │
+                 │         3V3 ─┼───────────────────┤ VCC              │
+                 │         GND ─┼───────────────────┤ GND              │
+                 │              │                   │                  │
+                 └──────────────┘                   └──────────────────┘
+
+
+Pin Summary Table
+-----------------
+
+  ESP32 GPIO    Display Pin    Function
+  ----------    -----------    --------
+  GPIO 13       D0             Data bit 0
+  GPIO 12       D1             Data bit 1
+  GPIO 14       D2             Data bit 2
+  GPIO 27       D3             Data bit 3
+  GPIO 26       D4             Data bit 4
+  GPIO 25       D5             Data bit 5
+  GPIO 33       D6             Data bit 6
+  GND           D7             MUST be tied to GND (floating causes noise)
+  GPIO 15       Ad0            Address bit 0 (digit select)
+  GPIO  2       Ad1            Address bit 1 (digit select)
+  GPIO  4       Ad2            Address bit 2 (digit select)
+  GPIO 16       CE             Chip Enable (active LOW)
+  GPIO 17       RST            Reset (active LOW)
+  3V3           VCC            Power supply
+  GND           GND            Ground
+
+
+HDSP/QDSP-2000 Display Pinout (DIP-12, top view)
+-------------------------------------------------
+
+  ┌───┬─────────────┬───┐
+  │ 1 │  ▯ ▯ ▯ ▯    │12 │
+  │ 2 │  (display)  │11 │
+  │ 3 │             │10 │
+  │ 4 │             │ 9 │
+  │ 5 │             │ 8 │
+  │ 6 │             │ 7 │
+  └───┴─────────────┴───┘
+
+  Pin  Function        Pin  Function
+  ---  --------        ---  --------
+   1   D4               12  D5
+   2   D3               11  D6
+   3   D2               10  CE (Chip Enable)
+   4   D1                9  Ad2
+   5   D0                8  Ad1
+   6   GND               7  Ad0
+
+  Note: Verify against YOUR specific QDSP variant --
+        pin numbering may differ slightly between models.
+        The HDSP datasheet pinout is the reference.
+
+
+Signal Timing
+-------------
+
+    Address  --| VALID |------------------
+                    | setup time (~1us)
+    Data     ------| VALID |--------------
+                        | setup time (~1us)
+    CE       ------------\     /----------
+                          \---/
+                          | pulse (~1us)
+
+
+Notes
+-----
+
+  - D7 must be tied to GND. Leaving it floating causes display noise.
+    Setting D7 HIGH enables custom character mode.
+
+  - 3.3V is fine. The display works at 3.3V from the ESP32, no level
+    shifter needed.
+
+  - No resistors needed. The smart display has built-in current limiting.
+
+  - 12 GPIO pins total. For a custom PCB you could reduce this to 3-4
+    pins by adding a shift register (e.g. 74HC595) to handle the
+    data/address bus, saving board space.
+
+  - Avoid ESP32 GPIO 6-11 (connected to flash) and GPIO 34-39 (input only).

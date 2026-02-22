@@ -1,0 +1,6 @@
+# ideas:
+
+- esp32 watch
+- using HP QDSP display (see: https://www.instructables.com/Arduino-QDSP-Display/)
+- custom PCB for compactness - SMD components
+- connects to phone using bluetooth and can track planned journeys through TFI API
