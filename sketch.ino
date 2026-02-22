@@ -12,7 +12,7 @@ QDSP_Smart display(DATA_PINS, ADDR_PINS, CE_PIN, RST_PIN);
 
 char virtualDisplay[9] = "        ";
 
-enum Mode { MODE_IDLE, MODE_DEMO, MODE_COUNT };
+enum Mode { MODE_IDLE, MODE_DEMO, MODE_COUNT, MODE_CLOCK };
 Mode currentMode = MODE_IDLE;
 unsigned long lastUpdate = 0;
 
@@ -60,6 +60,27 @@ void runDemo() {
 
 unsigned long countValue = 0;
 
+int clockH = 0, clockM = 0, clockS = 0, clockCs = 0;
+unsigned long lastClockTick = 0;
+
+void runClock() {
+    if (millis() - lastClockTick >= 10) {
+        lastClockTick += 10;
+        int prevS = clockS;
+        clockCs++;
+        if (clockCs >= 100) { clockCs = 0; clockS++; }
+        if (clockS >= 60)   { clockS = 0; clockM++; }
+        if (clockM >= 60)   { clockM = 0; clockH++; }
+        if (clockH >= 24)   { clockH = 0; }
+        char buf[9];
+        snprintf(buf, sizeof(buf), "%02d%02d%02d%02d", clockH, clockM, clockS, clockCs);
+        if (clockS != prevS)
+            displayAndPrint(buf);
+        else
+            display.writeString(buf);
+    }
+}
+
 void runCount() {
     if (millis() - lastUpdate >= 500) {
         lastUpdate = millis();
@@ -93,6 +114,17 @@ void handleSerial() {
         currentMode = MODE_IDLE;
         display.clear();
         displayAndPrint("        ");
+    } else if (input.startsWith("clock")) {
+        currentMode = MODE_CLOCK;
+        clockH = 0; clockM = 0; clockS = 0; clockCs = 0;
+        if (input.length() > 6) {
+            sscanf(input.c_str() + 6, "%d:%d:%d", &clockH, &clockM, &clockS);
+        }
+        lastClockTick = millis();
+        char buf[9];
+        snprintf(buf, sizeof(buf), "%02d%02d%02d%02d", clockH, clockM, clockS, clockCs);
+        displayAndPrint(buf);
+        Serial.println("[clock mode]");
     } else if (input.equalsIgnoreCase("count")) {
         currentMode = MODE_COUNT;
         countValue = 0;
@@ -113,7 +145,7 @@ void setup() {
     delay(2000);
 
     Serial.println("QDSP-2000 Display Test");
-    Serial.println("Commands: <text>, demo, count, clear");
+    Serial.println("Commands: <text>, demo, count, clock [HH:MM:SS], clear");
     Serial.println();
 
     display.begin();
@@ -127,6 +159,7 @@ void loop() {
     switch (currentMode) {
         case MODE_DEMO:  runDemo();  break;
         case MODE_COUNT: runCount(); break;
+        case MODE_CLOCK: runClock(); break;
         default: break;
     }
 }
