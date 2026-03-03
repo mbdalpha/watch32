@@ -5,7 +5,7 @@ Reference: https://www.instructables.com/Arduino-QDSP-Display/
 
 
                     ESP32 DevKit                    QDSP/HDSP-2000 Display
-                 ┌──────────────┐                  ┌──────────────────┐
+                 ┌──────────────┐                   ┌──────────────────┐
                  │              │                   │                  │
   Data Bus       │  GPIO 13 ────┼───────────────────┤ D0               │
   (7-bit ASCII)  │  GPIO 12 ────┼───────────────────┤ D1               │
@@ -22,14 +22,15 @@ Reference: https://www.instructables.com/Arduino-QDSP-Display/
                  │  GPIO  2 ────┼───────────────────┤ Ad1              │
                  │  GPIO  4 ────┼───────────────────┤ Ad2              │
                  │              │                   │                  │
-  Control        │  GPIO 16 ────┼───────────────────┤ CE  (active LOW) │
-                 │  GPIO 17 ────┼───────────────────┤ RST (active LOW) │
+  Control        │  GPIO 18 ────┼───────────────────┤ CE  (active LOW) │
+                 │  GPIO 19 ────┼───────────────────┤ RST (active LOW) │
                  │              │                   │                  │
                  │         3V3 ─┼───────────────────┤ VCC              │
                  │         GND ─┼───────────────────┤ GND              │
                  │              │                   │                  │
                  └──────────────┘                   └──────────────────┘
 
+See : https://content.instructables.com/F1B/UUOL/K28VX76T/F1BUUOLK28VX76T.jpg for QDSP pinout
 
 Pin Summary Table
 -----------------
@@ -47,36 +48,10 @@ Pin Summary Table
   GPIO 15       Ad0            Address bit 0 (digit select)
   GPIO  2       Ad1            Address bit 1 (digit select)
   GPIO  4       Ad2            Address bit 2 (digit select)
-  GPIO 16       CE             Chip Enable (active LOW)
-  GPIO 17       RST            Reset (active LOW)
+  GPIO 18       CE             Chip Enable (active LOW)
+  GPIO 19       RST            Reset (active LOW)
   3V3           VCC            Power supply
   GND           GND            Ground
-
-
-HDSP/QDSP-2000 Display Pinout (DIP-12, top view)
--------------------------------------------------
-
-  ┌───┬─────────────┬───┐
-  │ 1 │  ▯ ▯ ▯ ▯    │12 │
-  │ 2 │  (display)  │11 │
-  │ 3 │             │10 │
-  │ 4 │             │ 9 │
-  │ 5 │             │ 8 │
-  │ 6 │             │ 7 │
-  └───┴─────────────┴───┘
-
-  Pin  Function        Pin  Function
-  ---  --------        ---  --------
-   1   D4               12  D5
-   2   D3               11  D6
-   3   D2               10  CE (Chip Enable)
-   4   D1                9  Ad2
-   5   D0                8  Ad1
-   6   GND               7  Ad0
-
-  Note: Verify against YOUR specific QDSP variant --
-        pin numbering may differ slightly between models.
-        The HDSP datasheet pinout is the reference.
 
 
 Signal Timing

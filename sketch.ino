@@ -5,8 +5,8 @@
 
 const uint8_t DATA_PINS[7] = {13, 12, 14, 27, 26, 25, 33};
 const uint8_t ADDR_PINS[3] = {15, 2, 4};
-const uint8_t CE_PIN  = 16;
-const uint8_t RST_PIN = 17;
+const uint8_t CE_PIN  = 18;
+const uint8_t RST_PIN = 19;
 
 QDSP_Smart display(DATA_PINS, ADDR_PINS, CE_PIN, RST_PIN);
 
